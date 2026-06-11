@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A eSports - Elite Gaming Hub</title>
+  <style>
+    :root {
+      --bg-dark: #0a0e17;
+      --bg-card: #131926;
+      --accent-orange: #ff5722;
+      --accent-blue: #00bcd4;
+      --text-main: #ffffff;
+      --text-muted: #8a99ad;
+      --danger: #ef5350;
+      --success: #4caf50;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; }
+    
+    /* Utility & Auth Screens */
+    .screen { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; }
+    .screen.active { display: block; }
+    
+    .auth-container { max-width: 450px; margin: 80px auto; background: var(--bg-card); border-radius: 12px; padding: 30px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); border: 1px solid #222d42; }
+    h2 { font-size: 28px; font-weight: 700; margin-bottom: 20px; text-align: center; color: var(--accent-orange); text-transform: uppercase; letter-spacing: 1px; }
+    
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 14px; }
+    input, select { width: 100%; padding: 12px; background: #1c2638; border: 1px solid #2e3e5a; border-radius: 6px; color: #fff; font-size: 16px; outline: none; transition: border 0.3s; }
+    input:focus, select:focus { border-color: var(--accent-orange); }
+    
+    button { width: 100%; padding: 14px; background: linear-gradient(45deg, var(--accent-orange), #ff7043); border: none; border-radius: 6px; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer; transition: transform 0.2s, opacity 0.2s; }
+    button:hover { opacity: 0.9; transform: translateY(-1px); }
+    button:disabled { background: #444; cursor: not-allowed; }
+    
+    .auth-toggle { text-align: center; margin-top: 15px; color: var(--text-muted); cursor: pointer; font-size: 14px; display: block; padding: 5px; }
+    .auth-toggle span { color: var(--accent-orange); text-decoration: underline; pointer-events: none; }
+
+    /* Header & Navigation */
+    header { background: var(--bg-card); padding: 15px 20px; border-bottom: 1px solid #222d42; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 24px; font-weight: 800; color: #fff; }
+    .logo span { color: var(--accent-orange); }
+    .nav-profile { display: flex; align-items: center; gap: 20px; }
+    .balance-badge { background: rgba(0, 188, 212, 0.15); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 6px 12px; border-radius: 20px; font-weight: 600; }
+    .logout-btn { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 6px 12px; border-radius: 4px; width: auto; font-size: 13px; }
+
+    /* Home Layout tabs */
+    .tab-bar { display: flex; gap: 15px; margin-bottom: 25px; border-bottom: 2px solid #222d42; padding-bottom: 10px; }
+    .tab { padding: 10px 20px; cursor: pointer; color: var(--text-muted); font-weight: 600; transition: 0.3s; }
+    .tab.active-tab { color: var(--accent-orange); border-bottom: 2px solid var(--accent-orange); margin-bottom: -12px; }
+
+    /* Game Modes Section */
+    .mode-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
+    .mode-card { background: var(--bg-card); border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.3s, border-color 0.3s; border: 2px solid transparent; position: relative;}
+    .mode-card:hover { transform: translateY(-5px); border-color: var(--accent-orange); }
+    .mode-img { width: 100%; height: 180px; object-fit: cover; background-color: #2c3545; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--text-muted); }
+    .mode-info { padding: 15px; text-align: center; }
+    .mode-title { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
+
+    /* Tournaments Styling */
+    .tourney-list { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 15px; }
+    .tourney-item { background: var(--bg-card); border-radius: 10px; padding: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #222d42; flex-wrap: wrap; gap: 15px; }
+    .tourney-details h3 { color: #fff; font-size: 18px; margin-bottom: 8px; }
+    .tourney-grid-meta { display: grid; grid-template-columns: repeat(4, auto); gap: 20px; font-size: 14px; color: var(--text-muted); }
+    .meta-val { color: #fff; font-weight: 600; display: block; margin-top: 2px; }
+    .btn-join { width: auto; padding: 10px 24px; border-radius: 6px; }
+
+    /* Room Details Alert Box */
+    .room-info-box { background: rgba(76, 175, 80, 0.15); border: 1px dashed var(--success); padding: 12px; border-radius: 6px; margin-top: 10px; color: #fff; }
+
+    /* Seating Layout view */
+    .booking-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: var(--bg-card); padding: 20px; border-radius: 8px; }
+    .seat-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 30px; }
+    @media (max-width: 768px) { .seat-layout { grid-template-columns: 1fr; } .tourney-grid-meta { grid-template-columns: 1fr 1fr; } }
+    .team-box { background: var(--bg-card); padding: 20px; border-radius: 10px; border: 1px solid #222d42; }
+    .team-title { font-size: 18px; margin-bottom: 15px; text-align: center; padding-bottom: 8px; border-bottom: 1px solid #222d42; }
+    
+    .seat-option { display: flex; align-items: center; background: #1c2638; padding: 12px; margin-bottom: 10px; border-radius: 6px; cursor: pointer; border: 1px solid transparent; }
+    .seat-option.occupied { background: #2a1b20; border-color: #521c22; cursor: not-allowed; opacity: 0.7; }
+    .seat-option.selected { border-color: var(--accent-blue); background: #142d3d; }
+    .seat-option input[type="radio"] { width: auto; margin-right: 15px; transform: scale(1.2); }
+    .seat-meta { font-size: 12px; color: var(--text-muted); margin-left: auto; }
+
+    /* Form Dynamic Inputs */
+    .ingame-inputs-container { max-width: 600px; margin: 0 auto 30px auto; background: var(--bg-card); padding: 25px; border-radius: 10px; }
+    
+    /* Dialog Overlay modal */
+    .overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); z-index:1000; align-items:center; justify-content:center; padding: 20px;}
+    .dialog { background: var(--bg-card); border: 2px solid var(--danger); padding: 30px; border-radius: 12px; max-width: 450px; width: 100%; text-align: center; }
+    .dialog h3 { color: var(--danger); font-size: 24px; margin-bottom: 15px; }
+    .dialog p { color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+  <div id="suspensionOverlay" class="overlay">
+    <div class="dialog">
+      <h3>Account Suspended</h3>
+      <p id="suspensionReason">Your account has been temporarily or permanently barred from competing due to violation of platform terms.</p>
+    </div>
+  </div>
+
+  <div id="screenAuth" class="screen active">
+    <div class="auth-container">
+      <h2 id="authTitle">A eSports Login</h2>
+      <form id="authForm">
+        <div class="form-group" id="usernameGroup" style="display: none;">
+          <label>Unique Username</label>
+          <input type="text" id="authUsername" placeholder="Enter custom username" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="authEmail" required placeholder="name@domain.com">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="authPassword" required placeholder="••••••••">
+        </div>
+        <button type="submit" id="authBtn">Sign In</button>
+      </form>
+      <div class="auth-toggle" id="authToggle">Don't have an account? <span>Register here</span></div>
+    </div>
+  </div>
+
+  <div id="appWrapper" style="display: none;">
+    <header>
+      <div class="logo">A <span>eSports</span></div>
+      <div class="nav-profile">
+        <span id="displayUsername" style="font-weight: 600;">Player</span>
+        <span class="balance-badge">₹<span id="displayBalance">0</span></span>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+    </header>
+
+    <div id="screenHome" class="screen active">
+      <div class="tab-bar">
+        <div class="tab active-tab" id="tabBrowse" onclick="switchHomeTab('browse')">Browse Tournaments</div>
+        <div class="tab" id="tabMyMatches" onclick="switchHomeTab('mymatches')">My Tournaments</div>
+      </div>
+
+      <div id="subTabBrowse">
+        <div class="mode-container">
+          <div class="mode-card" onclick="alert('Battle Royale mode is Available Soon!')">
+            <div class="mode-img">BR MODE PIC</div>
+            <div class="mode-info">
+              <div class="mode-title">Battle Royale</div>
+              <p style="color: var(--text-muted); font-size:14px;">Classic survival matches</p>
+            </div>
+          </div>
+          <div class="mode-card" onclick="scrollToCS()">
+            <div class="mode-img">CS MODE PIC</div>
+            <div class="mode-info">
+              <div class="mode-title">Clash Squad</div>
+              <p style="color: var(--text-muted); font-size:14px;">Intense tactical combat lists</p>
+            </div>
+          </div>
+        </div>
+
+        <h2 style="text-align: left; margin-top: 40px; margin-bottom: 15px; font-size: 22px;" id="csSectionTitle">Clash Squad Competitions</h2>
+        <div class="tourney-list" id="csTournamentsContainer">
+           <p style="color: var(--text-muted)">Loading active tactical structures...</p>
+        </div>
+      </div>
+
+      <div id="subTabMyMatches" style="display: none;">
+        <h2>Registered Tournaments</h2>
+        <div class="tourney-list" id="myTournamentsContainer">
+          <p style="color: var(--text-muted)">You haven't registered for any tournaments yet.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="screenBooking" class="screen">
+      <div style="margin-bottom: 20px; color: var(--accent-orange); cursor: pointer;" onclick="showScreen('screenHome')">← Back to Dashboard</div>
+      <h2 id="bookingTourneyTitle" style="text-align: left;">Clash Squad Strategy</h2>
+      <p id="bookingMatchId" style="color: var(--text-muted); margin-bottom: 20px;"></p>
+
+      <div class="booking-header">
+        <div>
+          <p style="color: var(--text-muted);">Your Balance</p>
+          <h3 style="color: var(--accent-blue); font-size: 24px;">₹<span id="bookUserBalance">0</span></h3>
+        </div>
+        <div style="text-align: right;">
+          <p style="color: var(--text-muted);">Entry Fee (Per Player Slot)</p>
+          <h3 style="color: var(--accent-orange); font-size: 24px;">₹<span id="bookEntryFee">0</span></h3>
+        </div>
+      </div>
+
+      <div class="seat-layout">
+        <div class="team-box">
+          <div class="team-title" style="color: #64b5f6;">Team A</div>
+          <div id="teamAContainer"></div>
+        </div>
+        <div class="team-box">
+          <div class="team-title" style="color: #ff8a65;">Team B</div>
+          <div id="teamBContainer"></div>
+        </div>
+      </div>
+
+      <button id="proceedToDetailsBtn" onclick="processSeatSelection()">Confirm Selected Seat & Proceed</button>
+    </div>
+
+    <div id="screenDetails" class="screen">
+      <div style="margin-bottom: 20px; color: var(--accent-orange); cursor: pointer;" onclick="showScreen('screenBooking')">← Back to Seating Map</div>
+      <h2>In-Game Registrations</h2>
+      
+      <div class="ingame-inputs-container">
+        <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid var(--accent-blue);">
+          <p style="color: var(--text-muted); font-size: 14px;">Transaction Accounting Grid:</p>
+          <p style="margin-top: 5px;">Total Match Entry Cost Structure: <strong style="color: var(--accent-orange)">₹<span id="finalCheckoutCost">0</span></strong></p>
+        </div>
+        
+        <div id="dynamicNameFields">
+          </div>
+        
+        <button id="finalSubmitBookingBtn" style="margin-top: 10px;" onclick="commitBookingToCloud()">Finalize Registration & Pay</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+    import { getDatabase, ref, set, get, child, update, onValue } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD2cZqY0zgGUIOIcJwEecwNdIL4jN1ttRE",
+      authDomain: "aesports-95d6a.firebaseapp.com",
+      databaseURL: "https://aesports-95d6a-default-rtdb.firebaseio.com",
+      projectId: "aesports-95d6a",
+      storageBucket: "aesports-95d6a.firebasestorage.app",
+      messagingSenderId: "961172230968",
+      appId: "1:961172230968:web:69f16d7b41dabf17f1a7cd",
+      measurementId: "G-QQ3NLTZ60S"
+    };
+
+    // Initialization
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // Session States
+    let currentUserData = null;
+    let isRegistering = false;
+    let globalTournaments = {};
+    let selectedTournamentId = null;
+    let selectedSeatNumber = null;
+    let selectedTeamId = null;
+
+    // DOM References
+    const screenAuth = document.getElementById('screenAuth');
+    const appWrapper = document.getElementById('appWrapper');
+    const authTitle = document.getElementById('authTitle');
+    const authForm = document.getElementById('authForm');
+    const usernameGroup = document.getElementById('usernameGroup');
+    const authUsername = document.getElementById('authUsername');
+    const authEmail = document.getElementById('authEmail');
+    const authPassword = document.getElementById('authPassword');
+    const authBtn = document.getElementById('authBtn');
+    const authToggle = document.getElementById('authToggle');
+    const displayUsername = document.getElementById('displayUsername');
+    const displayBalance = document.getElementById('displayBalance');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const suspensionOverlay = document.getElementById('suspensionOverlay');
+
+    // FIXED TOGGLE LISTENER (Handles Event Bubble & Clears Inputs cleanly)
+    authToggle.addEventListener('click', () => {
+      isRegistering = !isRegistering;
+      
+      // Reset text fields so validation won't trip on hidden areas
+      authEmail.value = "";
+      authPassword.value = "";
+      authUsername.value = "";
+
+      if (isRegistering) {
+        authTitle.innerText = "Create Account";
+        usernameGroup.style.display = "block";
+        authUsername.setAttribute('required', 'true');
+        authBtn.innerText = "Register Now";
+        authToggle.innerHTML = "Already have an elite identity? <span>Login</span>";
+      } else {
+        authTitle.innerText = "A eSports Login";
+        usernameGroup.style.display = "none";
+        authUsername.removeAttribute('required');
+        authBtn.innerText = "Sign In";
+        authToggle.innerHTML = "Don't have an account? <span>Register here</span>";
+      }
+    });
+
+    // Handle Auth Submission
+    authForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = authEmail.value.trim();
+      const password = authPassword.value;
+
+      if (isRegistering) {
+        const username = authUsername.value.trim().toLowerCase();
+        if (!/^[a-zA-Z0-9_]{3,15}$/.test(username)) {
+          alert("Username must be alphanumeric, 3-15 chars, without spaces.");
+          return;
+        }
+
+        authBtn.disabled = true;
+        authBtn.innerText = "Verifying Username...";
+
+        try {
+          const usernameRef = ref(db, `usernames/${username}`);
+          const snapshot = await get(usernameRef);
+          
+          if (snapshot.exists()) {
+            alert("This username is already taken! Try another one.");
+            authBtn.disabled = false;
+            authBtn.innerText = "Register Now";
+            return;
+          }
+
+          authBtn.innerText = "Creating Profile...";
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+
+          await sendEmailVerification(user);
+          alert("A verification email has been sent to your inbox. Please verify before signing in.");
+
+          await set(ref(db, `users/${user.uid}`), {
+            uid: user.uid,
+            username: username,
+            email: email,
+            balance: 0,
+            status: "active"
+          });
+
+          await set(ref(db, `usernames/${username}`), user.uid);
+
+          await signOut(auth);
+          isRegistering = false;
+          authTitle.innerText = "A eSports Login";
+          usernameGroup.style.display = "none";
+          authUsername.removeAttribute('required');
+          authBtn.innerText = "Sign In";
+          authToggle.innerHTML = "Don't have an account? <span>Register here</span>";
+          authForm.reset();
+
+        } catch (err) {
+          alert(err.message);
+        } finally {
+          authBtn.disabled = false;
+        }
+
+      } else {
+        authBtn.disabled = true;
+        authBtn.innerText = "Authenticating...";
+        try {
+          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+          if (!userCredential.user.emailVerified) {
+            alert("Please verify your email address via the registration link sent before accessing features.");
+            await signOut(auth);
+            authBtn.disabled = false;
+            authBtn.innerText = "Sign In";
+            return;
+          }
+        } catch (err) {
+          alert(err.message);
+          authBtn.disabled = false;
+          authBtn.innerText = "Sign In";
+        }
+      }
+    });
+
+    // Core Connection Watcher State Loop
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.emailVerified) {
+        const userDbRef = ref(db, `users/${user.uid}`);
+        onValue(userDbRef, (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            if (data.status === "suspended") {
+              suspensionOverlay.style.display = "flex";
+              appWrapper.style.display = "none";
+              screenAuth.style.display = "none";
+              signOut(auth);
+              return;
+            }
+            currentUserData = data;
+            displayUsername.innerText = data.username;
+            displayBalance.innerText = data.balance;
+            
+            const bUB = document.getElementById('bookUserBalance');
+            if(bUB) bUB.innerText = data.balance;
+
+            screenAuth.classList.remove('active');
+            appWrapper.style.display = "block";
+            showScreen('screenHome');
+          }
+        });
+      } else {
+        currentUserData = null;
+        appWrapper.style.display = "none";
+        screenAuth.classList.add('active');
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      signOut(auth).then(() => {
+        window.location.reload();
+      });
+    });
+
+    window.showScreen = function(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+      if (screenId === 'screenHome') {
+        renderCSMatches();
+        renderMyMatches();
+      }
+ 
