@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A ESPORTS | Ultimate Tournament Hub</title>
+    <style>
+        /* --- DESIGN SYSTEM & CSS VARIABLES --- */
+        :root {
+            --bg-color: #050811;
+            --surface-color: rgba(13, 21, 38, 0.6);
+            --primary-neon: #18ffff;
+            --secondary-neon: #ff6d00;
+            --text-main: #ffffff;
+            --text-muted: #8fa0ba;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --glow-primary: drop-shadow(0 0 8px #18ffff);
+        }
+
+        /* --- GLOBAL RESETS --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(24, 255, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 109, 0, 0.05) 0%, transparent 40%);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* --- NAVBAR --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(5, 8, 17, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(24, 255, 255, 0.1);
+            z-index: 1000;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo-container img {
+            height: 45px;
+            width: auto;
+            filter: var(--glow-primary);
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, var(--primary-neon), var(--secondary-neon));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-neon);
+        }
+
+        /* --- HERO BANNER --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 20px 60px;
+            position: relative;
+        }
+
+        .hero-logo {
+            max-width: 320px;
+            width: 100%;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 25px rgba(24, 255, 255, 0.25));
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            margin-bottom: 15px;
+        }
+
+        .hero h1 span {
+            color: var(--primary-neon);
+            text-shadow: 0 0 15px rgba(24, 255, 255, 0.4);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 35px;
+        }
+
+        /* --- PREMIUM DOWNLOAD BUTTON --- */
+        .btn-download {
+            position: relative;
+            background: linear-gradient(90deg, #00e5ff, #ff6d00);
+            border: none;
+            outline: none;
+            padding: 18px 40px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0, 229, 255, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 229, 255, 0.5), 0 0 15px rgba(255, 109, 0, 0.4);
+        }
+
+        .btn-download:active {
+            transform: translateY(1px);
+        }
+
+        /* --- CONTAINER SECTIONS --- */
+        section {
+            padding: 100px 10%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 60px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: var(--primary-neon);
+            border-radius: 2px;
+        }
+
+        /* --- GRID: FEATURES COMPONENT --- */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--surface-color);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            padding: 40px 30px;
+            border-radius: 12px;
+            transition: transform 0.3s, border-color 0.3s;
+            text-align: left;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(24, 255, 255, 0.3);
+        }
+
+        .feature-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* --- TRUST & APPS INTEGRATION INFO --- */
+        .trust-showcase {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 50px;
+            background: linear-gradient(135deg, rgba(13,21,38,0.4) 0%, rgba(5,8,17,0.4) 100%);
+            border: 1px solid rgba(255, 109, 0, 0.1);
+            padding: 50px;
+            border-radius: 16px;
+        }
+
+        .trust-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .trust-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--secondary-neon);
+        }
+
+        .trust-text p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat-item h4 {
+            font-size: 2rem;
+            color: var(--primary-neon);
+            font-weight: 800;
+        }
+
+        .stat-item p {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- ACCORDION: GAME RULES --- */
+        .rules-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .rule-item {
+            background: var(--surface-color);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .rule-header {
+            padding: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: background 0.3s;
+        }
+
+        .rule-header:hover {
+            background: rgba(24, 255, 255, 0.03);
+        }
+
+        .rule-header::after {
+            content: '+';
+            font-size: 1.3rem;
+            color: var(--primary-neon);
+            transition: transform 0.3s;
+        }
+
+        .rule-item.active .rule-header::after {
+            transform: rotate(45deg);
+        }
+
+        .rule-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            border-top: 1px solid transparent;
+        }
+
+        .rule-content {
+            padding: 20px;
+        }
+
+        .rule-item.active .rule-body {
+            border-top-color: rgba(255,255,255,0.05);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background: #02040a;
+            padding: 40px 5%;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2.4rem; }
+            section { padding: 60px 5%; }
+            .trust-showcase { padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-logo-container">
+            <img src="logo.png" alt="A eSports Logo">
+            <span class="brand-title">A ESPORTS</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#trust">Security</a></li>
+            <li><a href="#rules">Fair Play</a></li>
+        </ul>
+    </header>
+
+    <main class="hero">
+        <img src="logo.png" alt="A eSports Logo Display" class="hero-logo">
+        <h1>Compete. Win. <span>Get Paid.</span></h1>
+        <p>The premium automated custom room platform built exclusively for professional mobile tournaments. Real-time stats tracking, zero delay credentials, and automated secure payouts.</p>
+        <a href="app-release.apk" class="btn-download" download>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4M7 10l5 5 5-5M12 15V3"/></svg>
+            Download Android App
+        </a>
+    </main>
+
+    <section id="features">
+        <h2 class="section-title">App Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="icon">⚡</span>
+                <h3>Instant Room Credentials</h3>
+                <p>No more waiting on active group messages. Room IDs and Passwords sync instantly directly to your match profile layout right when the admin uploads them.</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">🔒</span>
+                <h3>Anti-Cheat & Slot Locking</h3>
+                <p>Strict structural database pairing ensures only verified players who register for a specific slot ID can enter the matchmaking pipeline.</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">🏆</span>
+                <h3>Automated Prize Tracking</h3>
+                <p>Transparent result distribution. Trace exact points, placement rankings, and overall prize pools attached cleanly to your account wallet setup.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="trust">
+        <h2 class="section-title">Built On Trust</h2>
+        <div class="trust-showcase">
+            <div class="trust-text">
+                <h3>Fair Play, Secure Transactions</h3>
+                <p>Our platform handles tournament mapping seamlessly using encrypted data layers. When you join an automated match room pool, every placement, register state, and transaction tracking event is run under precise cloud checks to eliminate unfair advantages or data theft.</p>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <h4>100%</h4>
+                        <p>Verified Users</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4>&lt; 1s</h4>
+                        <p>Sync Latency</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="rules">
+        <h2 class="section-title">Tournament Rules</h2>
+        <div class="rules-container">
+            <div class="rule-item">
+                <div class="rule-header">1. Strict Account Mapping Policy</div>
+                <div class="rule-body">
+                    <div class="rule-content">
+                        Your in-game name (IGN) must match the registered custom view slot character configuration exactly. Unregistered players found inside custom lobbies will be instantly kicked by the monitoring server script without points compensation.
+                    </div>
+                </div>
+            </div>
+            <div class="rule-item">
+                <div class="rule-header">2. Teaming and Hack Restrictions</div>
+                <div class="rule-body">
+                    <div class="rule-content">
+                        Use of third-party modifications, scripts, or teaming up with opposing structural slots will result in a permanent system ban on your linked User ID. All results data points for that match pool will be completely frozen.
+                    </div>
+                </div>
+            </div>
+            <div class="rule-item">
+                <div class="rule-header">3. Timing and Delays</div>
+                <div class="rule-body">
+                    <div class="rule-content">
+                        Room IDs and passwords become visible on your application view exactly when the match timing schedule ticks over. Rooms launch precisely 10 minutes post identity access distribution.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 A ESPORTS Gaming Network. All Rights Reserved. Crafted for elite competitive play.</p>
+    </footer>
+
+    <script>
+        // HANDLE DYNAMIC EXPANDABLE ACCORDION FOR RULES
+        document.querySelectorAll('.rule-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.parentElement;
+                const body = item.querySelector('.rule-body');
+                
+                // Toggle active structural CSS status flags
+                if (item.classList.contains('active')) {
+                    item.classList.remove('active');
+                    body.style.maxHeight = '0';
+                } else {
+                    // Close other rule elements smoothly
+                    document.querySelectorAll('.rule-item').forEach(otherItem => {
+                        otherItem.classList.remove('active');
+                        otherItem.querySelector('.rule-body').style.maxHeight = '0';
+                    });
+                    
+                    item.classList.add('active');
+                    body.style.maxHeight = body.scrollHeight + 'px';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
