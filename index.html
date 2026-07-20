@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A ESPORTS | Ultimate Tournament Hub</title>
+    <meta name="google-site-verification" content="PdRQ86vHhMUAucjZ2DiZ12wNL7kRLJg8hNX1N4i25tQ" />
+    <style>
+        /* --- DESIGN SYSTEM & CSS VARIABLES --- */
+        :root {
+            --bg-color: #050811;
+            --surface-color: rgba(13, 21, 38, 0.6);
+            --primary-neon: #18ffff;
+            --secondary-neon: #ff6d00;
+            --text-main: #ffffff;
+            --text-muted: #8fa0ba;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --glow-primary: drop-shadow(0 0 8px #18ffff);
+        }
+
+        /* --- GLOBAL RESETS --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(24, 255, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 109, 0, 0.05) 0%, transparent 40%);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* --- NAVBAR --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(5, 8, 17, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(24, 255, 255, 0.1);
+            z-index: 1000;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo-container img {
+            height: 45px;
+            width: 45px;
+            object-fit: contain;
+            filter: var(--glow-primary);
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, var(--primary-neon), var(--secondary-neon));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-neon);
+        }
+
+        .nav-socials {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .nav-socials a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1px solid rgba(24, 255, 255, 0.2);
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .nav-socials a:hover {
+            color: var(--bg-color);
+            background: var(--primary-neon);
+            border-color: var(--primary-neon);
+            box-shadow: 0 0 15px rgba(24, 255, 255, 0.5);
+        }
+
+        .nav-socials svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* --- HAMBURGER / DRAWER TOGGLE --- */
+        .hamburger-btn {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+            width: 40px;
+            height: 40px;
+            background: none;
+            border: 1px solid rgba(24, 255, 255, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 1100;
+        }
+
+        .hamburger-btn span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            margin: 0 auto;
+            background: var(--primary-neon);
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .hamburger-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .hamburger-btn.open span:nth-child(2) { opacity: 0; }
+        .hamburger-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        /* --- MOBILE DRAWER --- */
+        .drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 4, 10, 0.7);
+            backdrop-filter: blur(3px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 1050;
+        }
+
+        .drawer-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 78%;
+            max-width: 320px;
+            background: #070c18;
+            border-left: 1px solid rgba(24, 255, 255, 0.15);
+            box-shadow: -10px 0 40px rgba(0,0,0,0.5);
+            transform: translateX(100%);
+            transition: transform 0.35s ease;
+            z-index: 1100;
+            padding: 90px 30px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .drawer.open {
+            transform: translateX(0);
+        }
+
+        .drawer a.drawer-link {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .drawer .btn-download {
+            margin-top: 20px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .drawer-socials {
+            display: flex;
+            gap: 14px;
+            margin-top: 30px;
+        }
+
+        .drawer-socials a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid rgba(24, 255, 255, 0.2);
+            color: var(--text-muted);
+        }
+
+        .drawer-socials svg { width: 18px; height: 18px; }
+
+        /* --- HERO BANNER --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 20px 60px;
+            position: relative;
+        }
+
+        .hero-logo {
+            max-width: 220px;
+            width: 100%;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 25px rgba(24, 255, 255, 0.25));
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            margin-bottom: 15px;
+        }
+
+        .hero h1 span {
+            color: var(--primary-neon);
+            text-shadow: 0 0 15px rgba(24, 255, 255, 0.4);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 35px;
+        }
+
+        /* --- PREMIUM DOWNLOAD BUTTON --- */
+        .btn-download {
+            position: relative;
+            background: linear-gradient(90deg, #00e5ff, #ff6d00);
+            border: none;
+            outline: none;
+            padding: 18px 40px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0, 229, 255, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 229, 255, 0.5), 0 0 15px rgba(255, 109, 0, 0.4);
+        }
+
+        .btn-download:active {
+            transform: translateY(1px);
+        }
+
+        .download-meta {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-top: 22px;
+            flex-wrap: wrap;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .download-meta .meta-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--surface-color);
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 8px 14px;
+            border-radius: 20px;
+        }
+
+        .download-meta .meta-pill strong {
+            color: var(--primary-neon);
+        }
+
+        /* --- CONTAINER SECTIONS --- */
+        section {
+            padding: 100px 10%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 60px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: var(--primary-neon);
+            border-radius: 2px;
+        }
+
+        /* --- GRID: FEATURES COMPONENT --- */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--surface-color);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            padding: 40px 30px;
+            border-radius: 12px;
+            transition: transform 0.3s, border-color 0.3s;
+            text-align: left;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(24, 255, 255, 0.3);
+        }
+
+        .feature-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* --- TRUST & APPS INTEGRATION INFO --- */
+        .trust-showcase {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 50px;
+            background: linear-gradient(135deg, rgba(13,21,38,0.4) 0%, rgba(5,8,17,0.4) 100%);
+            border: 1px solid rgba(255, 109, 0, 0.1);
+            padding: 50px;
+            border-radius: 16px;
+        }
+
+        .trust-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .trust-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--secondary-neon);
+        }
+
+        .trust-text p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item h4 {
+            font-size: 2rem;
+            color: var(--primary-neon);
+            font-weight: 800;
+        }
+
+        .stat-item p {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .trust-badges {
+            flex: 1;
+            min-width: 260px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .trust-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(24, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 20px 12px;
+        }
+
+        .trust-badge .icon { font-size: 1.6rem; }
+        .trust-badge span {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- SOCIAL SECTION --- */
+        .social-section {
+            text-align: center;
+        }
+
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .social-card {
+            background: var(--surface-color);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 14px;
+            padding: 34px 20px;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: transform 0.3s, border-color 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .social-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(24, 255, 255, 0.35);
+        }
+
+        .social-card .social-icon-wrap {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(24, 255, 255, 0.08);
+        }
+
+        .social-card .social-icon-wrap svg { width: 28px; height: 28px; }
+
+        .social-card h4 {
+            font-size: 1.05rem;
+            letter-spacing: 0.5px;
+        }
+
+        .social-card p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* --- ACCORDION: GAME RULES --- */
+        .rules-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .rule-item {
+            background: var(--surface-color);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .rule-header {
+            padding: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: background 0.3s;
+        }
+
+        .rule-header:hover {
+            background: rgba(24, 255, 255, 0.03);
+        }
+
+        .rule-header::after {
+            content: '+';
+            font-size: 1.3rem;
+            color: var(--primary-neon);
+            transition: transform 0.3s;
+        }
+
+        .rule-item.active .rule-header::after {
+            transform: rotate(45deg);
+        }
+
+        .rule-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            border-top: 1px solid transparent;
+        }
+
+        .rule-content {
+            padding: 20px;
+        }
+
+        .rule-item.active .rule-body {
+            border-top-color: rgba(255,255,255,0.05);
+        }
+
+        /* --- FAQ (reuses accordion pattern) --- */
+
+        /* --- FOOTER --- */
+        footer {
+            background: #02040a;
+            padding: 50px 5% 30px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer-socials {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .footer-socials a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(24, 255, 255, 0.15);
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .footer-socials a:hover {
+            color: var(--bg-color);
+            background: var(--primary-neon);
+            border-color: var(--primary-neon);
+        }
+
+        .footer-socials svg { width: 18px; height: 18px; }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .footer-links a:hover { color: var(--primary-neon); }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hamburger-btn { display: flex; }
+            .hero h1 { font-size: 2.4rem; }
+            section { padding: 60px 5%; }
+            .trust-showcase { padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-logo-container">
+            <img src="https://i.ibb.co/rRH2pYxq/logo.png" alt="A eSports Logo">
+            <span class="brand-title">A ESPORTS</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#trust">Security</a></li>
+            <li><a href="#rules">Fair Play</a></li>
+            <li><a href="#connect">Connect</a></li>
+            <li class="nav-socials">
+                <a href="https://www.instagram.com/a_esports_official?igsh=MWh0d212b2l0MXBlbA==" target="_blank" rel="noopener" aria-label="Instagram">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                </a>
+                <a href="https://youtube.com/@aesportsofc?si=4zOPtaxBLDkfcTTC" target="_blank" rel="noopener" aria-label="YouTube">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 9l5 3-5 3z" fill="currentColor" stroke="none"/></svg>
+                </a>
+                <a href="https://t.me/aesportsofc" target="_blank" rel="noopener" aria-label="Telegram">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3L2 11l6 2m14-10l-4 18-8-6m12-12l-12 12m0 0l-1 6"/></svg>
+                </a>
+            </li>
+        </ul>
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu">
+            <span></span><span></span><span></span>
+        </button>
+    </header>
+<div class="drawer-overlay" id="drawerOverlay"></div>
+    <nav class="drawer" id="drawer">
+        <a class="drawer-link" href="#features">Features</a>
+        <a class="drawer-link" href="#trust">Security</a>
+        <a class="drawer-link" href="#rules">Fair Play</a>
+        <a class="drawer-link" href="#connect">Connect</a>
+        <a href="https://raw.githubusercontent.com/arshyann/A-eSports/main/A%20eSports%20Official.apk" class="btn-download" download="A_eSports_Official.apk">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4M7 10l5 5 5-5M12 15V3"/></svg>
+            Download App
+        </a>
+        <div class="drawer-socials">
+            <a href="https://www.instagram.com/a_esports_official?igsh=MWh0d212b2l0MXBlbA==" target="_blank" rel="noopener" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            </a>
+            <a href="https://youtube.com/@aesportsofc?si=4zOPtaxBLDkfcTTC" target="_blank" rel="noopener" aria-label="YouTube">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 9l5 3-5 3z" fill="currentColor" stroke="none"/></svg>
+            </a>
+            <a href="https://t.me/aesportsofc" target="_blank" rel="noopener" aria-label="Telegram">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3L2 11l6 2m14-10l-4 18-8-6m12-12l-12 12m0 0l-1 6"/></svg>
+            </a>
+        </div>
+    </nav>
+
+    <main class="hero">
+        <img src="https://i.ibb.co/rRH2pYxq/logo.png" alt="A eSports Logo Display" class="hero-logo">
+        <h1>Compete. Win. <span>Get Paid.</span></h1>
+        <p>The premium automated custom room platform built exclusively for professional mobile tournaments. Real-time stats tracking, zero delay credentials, and automated secure payouts.</p>
+        
+        <a href="https://raw.githubusercontent.com/arshyann/A-eSports/main/A%20eSports%20Official.apk" class="btn-download" download="A_eSports_Official.apk">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4M7 10l5 5 5-5M12 15V3"/></svg>
+            Download Android App
+        </a>
+
+        <div class="download-meta">
+            <div class="meta-pill">⬇ <strong>1.5k+</strong>&nbsp;downloads</div>
+            <div class="meta-pill">📦 v1.0 &middot; APK</div>
+            <div class="meta-pill">⭐ Community rated</div>
+        </div>
+    </main>
+
+    <section id="features">
+        <h2 class="section-title">App Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="icon">⚡</span>
+                <h3>Instant Room Credentials</h3>
+                <p>No more waiting on active group messages. Room IDs and Passwords sync instantly directly to your match profile layout right when the admin uploads them.</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">🔒</span>
+                <h3>Anti-Cheat & Slot Locking</h3>
+                <p>Strict structural database pairing ensures only verified players who register for a specific slot ID can enter the matchmaking pipeline.</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">🏆</span>
+                <h3>Automated Prize Tracking</h3>
+                <p>Transparent result distribution. Trace exact points, placement rankings, and overall prize pools attached cleanly to your account wallet setup.</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">📊</span>
+                <h3>Live Leaderboards</h3>
+                <p>Follow point standings and kill counts update in real time as match results are entered, so every squad knows exactly where they stand.</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">🔔</span>
+                <h3>Match Notifications</h3>
+                <p>Get pushed alerts the moment registration opens, slots fill up, or your room credentials go live — never miss a check-in window again.</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">💬</span>
+                <h3>Support & Community</h3>
+                <p>Reach the admin team directly through Telegram, or catch tournament highlights and announcements on Instagram and YouTube.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="trust">
+        <h2 class="section-title">Built On Trust</h2>
+        <div class="trust-showcase">
+            <div class="trust-text">
+                <h3>Fair Play, Secure Transactions</h3>
+                <p>Our platform handles tournament mapping seamlessly using encrypted data layers. When you join an automated match room pool, every placement, register state, and transaction tracking event is run under precise cloud checks to eliminate unfair advantages or data theft.</p>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <h4>1,592</h4>
+                        <p>App Downloads</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4>100%</h4>
+                        <p>Verified Users</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4>&lt; 1s</h4>
+                        <p>Sync Latency</p>
+                    </div>
+                </div>
+            </div>
+            <div class="trust-badges">
+                <div class="trust-badge"><span class="icon">🛡️</span><span>Encrypted Data Layer</span></div>
+                <div class="trust-badge"><span class="icon">🔐</span><span>Firebase-Secured Login</span></div>
+                <div class="trust-badge"><span class="icon">✅</span><span>Admin-Reviewed Registrations</span></div>
+                <div class="trust-badge"><span class="icon">🤝</span><span>Community Trusted</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="rules">
+        <h2 class="section-title">Tournament Rules</h2>
+        <div class="rules-container">
+            <div class="rule-item">
+                <div class="rule-header">1. Strict Account Mapping Policy</div>
+                <div class="rule-body">
+                    <div class="rule-content">
+                        Your in-game name (IGN) must match the registered custom view slot character configuration exactly. Unregistered players found inside custom lobbies will be instantly kicked by the monitoring server script without points compensation.
+                    </div>
+                </div>
+            </div>
+            <div class="rule-item">
+                <div class="rule-header">2. Teaming and Hack Restrictions</div>
+                <div class="rule-body">
+                    <div class="rule-content">
+                        Use of third-party modifications, scripts, or teaming up with opposing structural slots will result in a permanent system ban on your linked User ID. All results data points for that match pool will be completely frozen.
+                    </div>
+                </div>
+            </div>
+            <div class="rule-item">
+                <div class="rule-header">3. Timing and Delays</div>
+                <div class="rule-body">
+                    <div class="rule-content">
+                        Room IDs and passwords become visible on your application view exactly when the match timing schedule ticks over. Rooms launch precisely 10 minutes post identity access distribution.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="connect" class="social-section">
+        <h2 class="section-title">Join The Community</h2>
+        <p style="color: var(--text-muted); max-width: 600px; margin: -30px auto 0;">Follow match highlights, tournament drops, and support — all in one place.</p>
+        <div class="social-grid">
+            <a class="social-card" href="https://www.instagram.com/a_esports_official?igsh=MWh0d212b2l0MXBlbA==" target="_blank" rel="noopener">
+                <div class="social-icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                </div>
+                <h4>Instagram</h4>
+                <p>Highlights & announcements</p>
+            </a>
+            <a class="social-card" href="https://youtube.com/@aesportsofc?si=4zOPtaxBLDkfcTTC" target="_blank" rel="noopener">
+                <div class="social-icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 9l5 3-5 3z" fill="currentColor" stroke="none"/></svg>
+                </div>
+                <h4>YouTube</h4>
+                <p>Match replays & recaps</p>
+            </a>
+            <a class="social-card" href="https://t.me/aesportsofc" target="_blank" rel="noopener">
+                <div class="social-icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3L2 11l6 2m14-10l-4 18-8-6m12-12l-12 12m0 0l-1 6"/></svg>
+                </div>
+                <h4>Telegram</h4>
+                <p>Room IDs & live support</p>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-socials">
+            <a href="https://www.instagram.com/a_esports_official?igsh=MWh0d212b2l0MXBlbA==" target="_blank" rel="noopener" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            </a>
+            <a href="https://youtube.com/@aesportsofc?si=4zOPtaxBLDkfcTTC" target="_blank" rel="noopener" aria-label="YouTube">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 9l5 3-5 3z" fill="currentColor" stroke="none"/></svg>
+            </a>
+            <a href="https://t.me/aesportsofc" target="_blank" rel="noopener" aria-label="Telegram">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3L2 11l6 2m14-10l-4 18-8-6m12-12l-12 12m0 0l-1 6"/></svg>
+            </a>
+        </div>
+        <div class="footer-links">
+            <a href="#features">Features</a>
+            <a href="#trust">Security</a>
+            <a href="#rules">Fair Play</a>
+            <a href="#connect">Connect</a>
+        </div>
+        <p>&copy; 2026 A ESPORTS Gaming Network. All Rights Reserved. Crafted for elite competitive play.</p>
+    </footer>
+
+    <script>
+        // HANDLE DYNAMIC EXPANDABLE ACCORDION FOR RULES
+        document.querySelectorAll('.rule-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.parentElement;
+                const body = item.querySelector('.rule-body');
+                
+                if (item.classList.contains('active')) {
+                    item.classList.remove('active');
+                    body.style.maxHeight = '0';
+                } else {
+                    document.querySelectorAll('.rule-item').forEach(otherItem => {
+                        otherItem.classList.remove('active');
+                        otherItem.querySelector('.rule-body').style.maxHeight = '0';
+                    });
+                    
+                    item.classList.add('active');
+                    body.style.maxHeight = body.scrollHeight + 'px';
+                }
+            });
+        });
+
+        // MOBILE DRAWER TOGGLE
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const drawer = document.getElementById('drawer');
+        const drawerOverlay = document.getElementById('drawerOverlay');
+
+        function closeDrawer() {
+            hamburgerBtn.classList.remove('open');
+            drawer.classList.remove('open');
+            drawerOverlay.classList.remove('open');
+        }
+
+        hamburgerBtn.addEventListener('click', () => {
+            const isOpen = drawer.classList.toggle('open');
+            hamburgerBtn.classList.toggle('open', isOpen);
+            drawerOverlay.classList.toggle('open', isOpen);
+        });
+
+        drawerOverlay.addEventListener('click', closeDrawer);
+        document.querySelectorAll('.drawer-link, .drawer .btn-download').forEach(el => {
+            el.addEventListener('click', closeDrawer);
+        });
+    </script>
+</body>
+</html>
